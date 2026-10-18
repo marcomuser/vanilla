@@ -19,6 +19,8 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 
 ### Multi-page app
 
+Decided in [0001 Multi-page app rendered on the server](../decisions/0001-multi-page-app-rendered-on-the-server.md):
+
 - Every URL returns a complete HTML document rendered on the server.
 - Navigation is real navigation. The URL, links and forms hold the state.
 - Mutations use POST, then redirect, then GET. Validation errors re-render the
@@ -38,11 +40,13 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 
 ### No build tools
 
+Decided in [0003 No build step](../decisions/0003-no-build-step.md):
+
 - Plain HTML, CSS and ES modules, loaded from stable, versioned URLs.
 - Modern CSS: cascade layers, `@scope`, nesting, custom properties, container
   queries, `:has()`.
-- Third-party code is loaded as published ES modules from a pinned CDN URL or
-  copied into the project.
+- Third-party code is copied into the project at a pinned version and served
+  from the app's own origin. Modules import each other through an import map.
 
 ### Design system
 
@@ -51,7 +55,7 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 - The design system gives consistency through encapsulation: components expose
   attributes, slots, parts and tokens, and app code does not style their
   internals. Decided in
-  [0002 Shadow DOM for the design system](../decisions/0002-shadow-dom-for-the-design-system.md).
+  [0005 Shadow DOM for the design system](../decisions/0005-shadow-dom-for-the-design-system.md).
 - The app uses native elements for document structure (`main`, `nav`,
   `article`, headings, links) and design-system components for visible UI.
 - Which design system a project uses, its element prefix and its rules are
@@ -60,7 +64,7 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 
 ### CSS
 
-Decided in [0003 Scoped CSS per component](../decisions/0003-scoped-css-per-component.md):
+Decided in [0006 Scoped CSS per component](../decisions/0006-scoped-css-per-component.md):
 
 - One CSS file per component or page, beside its template.
 - Each file is a single `@layer components { @scope (.card) to (:scope [data-c] > *) { … } }`
@@ -88,7 +92,7 @@ in storage, not in memory.
 
 The central UX rule: a page paints its final layout in the first frame. No
 layout shifts, no unstyled flashes. Decided in
-[0004 Design-system components defined before first paint](../decisions/0004-design-system-components-before-first-paint.md).
+[0007 Design-system components defined before first paint](../decisions/0007-design-system-components-before-first-paint.md).
 
 - Each page declares the components it uses as render-blocking module scripts
   (`<script type="module" blocking="render" src="…">`), generated from one
@@ -105,10 +109,12 @@ layout shifts, no unstyled flashes. Decided in
 - The first visit is slower than a native-only page because component
   definitions block rendering. Later pages reuse the cache.
 - Components need JavaScript. Pages without JavaScript are not a goal.
-- Firefox currently lacks render-blocking scripts and cross-document view
-  transitions. Pages work there but may briefly show unstyled components.
+- The app uses standards-track features before every browser ships them
+  ([0002](../decisions/0002-standards-track-platform-features.md)). Firefox
+  lacks render-blocking scripts and cross-document view transitions. Pages
+  work there but may briefly show unstyled components.
 - One CSS request per component on the first visit. This is free over HTTP/2,
-  which the server contract therefore requires (see decision 0003).
+  which the server contract therefore requires (see decisions 0003 and 0006).
 
 ## The skill
 
@@ -172,7 +178,7 @@ roots), and a first-frame test for new components.
   clearing server-rendered `custom-error`. Workarounds exist until then.
 - Components that may measure themselves are untested: textarea, carousel,
   scroller, split-panel, stepper.
-- Browser support policy and canonical file structure need to be written down.
-  Decision 0003 settles where component and page styles live.
+- The canonical file structure needs to be written down. Decision 0006
+  settles where component and page styles live.
 - Evals: run realistic tasks with and without the skill to find where agents
   drift, and write the skill from those failures.

@@ -1,10 +1,10 @@
-# 0001 View transitions on every navigation
+# 0004 View transitions on every navigation
 
 ## Context
 
 The app is a multi-page app. Every navigation loads a new document rendered
-on the server. Navigations should still feel continuous, without client-side
-rendering.
+on the server ([0001](0001-multi-page-app-rendered-on-the-server.md)).
+Navigations should still feel continuous, without client-side rendering.
 
 ## Decision
 
@@ -44,9 +44,9 @@ as the user left it, the new page in its final layout.
 ## Consequences
 
 - Every page renders its final layout in the first frame:
-  - stylesheets in `<head>` ([0003](0003-scoped-css-per-component.md))
+  - stylesheets in `<head>` ([0006](0006-scoped-css-per-component.md))
   - design-system components defined before the first paint
-    ([0004](0004-design-system-components-before-first-paint.md))
+    ([0007](0007-design-system-components-before-first-paint.md))
   - all visible state rendered by the server as attributes
   - no component that measures itself and changes the layout afterwards
 - Transient UI such as open dialogs and drawers is closed before leaving a
@@ -54,8 +54,9 @@ as the user left it, the new page in its final layout.
 - A `view-transition-name` must be unique on a page. Names live in page
   files, which reach the roots of the components they place.
 - Users who prefer reduced motion navigate without animation.
-- In browsers without support, navigation works without animation. The
-  first-frame rule still prevents layout shifts there.
+- In browsers without support, navigation works without animation
+  ([0002](0002-standards-track-platform-features.md)). The first-frame rule
+  still prevents layout shifts there.
 
 ## Alternatives
 

@@ -1,4 +1,4 @@
-# 0002 Shadow DOM for the design system, light DOM for the app
+# 0005 Shadow DOM for the design system, light DOM for the app
 
 ## Context
 
@@ -20,7 +20,7 @@ slots, parts and tokens.
 The app writes no shadow DOM. Its code comes in two kinds:
 
 - **App components**: server-rendered templates with a `data-c` root and a
-  scoped CSS file ([0003](0003-scoped-css-per-component.md)).
+  scoped CSS file ([0006](0006-scoped-css-per-component.md)).
 - **Islands**: app components with a light-DOM custom element that adds
   behaviour to their server-rendered markup.
 
@@ -48,7 +48,7 @@ system. `@scope` separates app components from each other.
 - The design system is a precondition, not something the app builds. What
   it does not expose, the app cannot change, and fixes go upstream.
 - Design-system components need their definitions before they render. See
-  [0004](0004-design-system-components-before-first-paint.md).
+  [0007](0007-design-system-components-before-first-paint.md).
 - ID references such as `aria-labelledby` do not cross a shadow root.
 - Design-system form controls take part in forms only if the design system
   implements form association.

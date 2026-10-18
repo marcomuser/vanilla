@@ -1,10 +1,10 @@
-# 0003 Scoped CSS per component
+# 0006 Scoped CSS per component
 
 ## Context
 
 App CSS has to work without a build step and be scoped per app component.
 App components and pages live in the light DOM
-([0002](0002-shadow-dom-for-the-design-system.md)).
+([0005](0005-shadow-dom-for-the-design-system.md)).
 It should sit close to the markup it styles and load fast. There should be
 only one way to write it.
 
@@ -53,8 +53,8 @@ rules. The app builds on the design system's styles and tokens and can adjust
 them freely from its own layers. A design-system component's inside is
 behind its shadow root, and the app places it like a nested app component.
 
-The server links the files a page uses in `<head>`. The URLs are versioned
-and cached long-term, and the files are served over HTTP/2.
+The server links the files a page uses in `<head>`, at versioned URLs over
+HTTP/2 ([0003](0003-no-build-step.md)).
 
 ## Rationale
 
@@ -95,10 +95,9 @@ and cached long-term, and the files are served over HTTP/2.
   fetches only after the file that contains it.
 - A root without `data-c` silently lets its parent's styles in, and the
   browser does not enforce flat selectors. Both need an automated check.
-- HTTP/2 is part of the server contract.
 - The server knows a page's components before it renders `<head>`, as it
   does for design-system component scripts
-  ([0004](0004-design-system-components-before-first-paint.md)).
+  ([0007](0007-design-system-components-before-first-paint.md)).
 - Component names are global class names. Components leave their outer
   spacing and placement to the parent.
 - The boundary follows the rendered page, not the template file. Markup
@@ -119,5 +118,5 @@ and cached long-term, and the files are served over HTTP/2.
 - **Global CSS with naming conventions:** styles leak into nested components.
 - **Shadow DOM or CSS module scripts:** turn every app component into a
   custom element with a definition and styles per shadow root
-  ([0002](0002-shadow-dom-for-the-design-system.md)).
+  ([0005](0005-shadow-dom-for-the-design-system.md)).
 - **Tailwind:** needs a build step.
