@@ -15,7 +15,7 @@ about any other component, whether above it or nested inside it. Styles stop
 where a nested component begins, and nothing from outside reaches into
 yours. A parent may touch only the outer box of a nested component, to place
 it. The browser enforces this boundary, so it needs no build step and no
-naming convention.
+naming convention for classes. It only needs a marker on every root.
 
 Every component and every page has one CSS file next to its template. The
 file holds one block. It is the same for every file except for the layer and
