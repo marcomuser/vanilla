@@ -1,2 +1,7 @@
 # Playwright CLI output (may contain credentials)
 .playwright-cli/
+
+# Local prototypes to guide architecture decisions
+prototypes/
+
+.DS_Store
