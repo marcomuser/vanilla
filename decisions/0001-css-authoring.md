@@ -29,6 +29,19 @@ file holds one block. It is the same for every component except for the name:
 `.card` names the component. `data-c` on every component root marks where
 one component ends and the next begins.
 
+All CSS sits in cascade layers, ordered once for the whole app:
+
+- **design system**: lowest priority. Its global styles live in its own
+  layers, which rank below the app's.
+- **`base`**: document-level rules.
+- **`components`**: one block per component, as above.
+- **`pages`**: page-specific rules. They win over components.
+
+A higher layer always wins, whatever the specificity or load order of the
+rules. The app builds on the design system's styles and tokens and can adjust
+them freely from its own layers. It never styles the inside of a
+design-system component.
+
 The server links the files a page uses in `<head>`. The URLs are versioned
 and cached long-term, and the files are served over HTTP/2.
 
@@ -39,11 +52,16 @@ and cached long-term, and the files are served over HTTP/2.
 - **Scoped, not isolated.** Inherited properties and global styles still
   reach into a component. `@scope` limits where selectors match. It does not
   wall the component off the way shadow DOM does.
-- **Flat selectors, layers for overrides.** Specificity is compared before
-  scope proximity, so on a child component's root a more specific parent rule
-  wins. Proximity only breaks ties. Selectors therefore stay flat. Pages that
-  must override a component do so from a higher layer:
-  `base` < `components` < `pages`.
+- **Layers make priority independent of load order.** Each page links only
+  the files it uses, so the order of rules changes from page to page. Without
+  layers, specificity and that changing order would decide which rule wins.
+  With layers, the role of a file decides: the design system, the app base,
+  a component or a page.
+- **Flat selectors inside a layer.** Within one layer, specificity is
+  compared before scope proximity, so a more specific parent rule wins on a
+  child component's root. Proximity only breaks ties. Selectors therefore
+  stay flat, and overrides go into a higher layer instead of a more specific
+  selector.
 - **Inline styles don't scale.** A `<style>` in every component instance
   slowed rendering more than linearly in every browser, by up to 60× on long
   lists. Inline CSS is also re-sent with every page instead of being cached.
@@ -56,6 +74,10 @@ and cached long-term, and the files are served over HTTP/2.
 ## Consequences
 
 - Colocation means a file next to the template, not CSS inside the markup.
+- All app CSS lives in a layer. Unlayered CSS would beat every layer, and
+  `!important` reverses the layer order, so neither is used.
+- A design system has to ship its global styles in cascade layers, or the
+  app imports them into the lowest layer.
 - HTTP/2 is part of the server contract.
 - The server knows a page's components before it renders `<head>`. It already
   does for component scripts.

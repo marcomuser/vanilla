@@ -3,7 +3,7 @@
 First iteration, 2026-10-11. Describes the direction we settled on for building
 web user interfaces and for the `vanilla-web` skill that teaches it. Individual
 decisions, with their evidence and the alternatives considered, are recorded in
-[`decisions/`](decisions).
+[`decisions/`](../decisions).
 
 ## Idea
 
@@ -59,7 +59,7 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 
 ### CSS
 
-Decided in [0001 CSS authoring](decisions/0001-css-authoring.md):
+Decided in [0001 CSS authoring](../decisions/0001-css-authoring.md):
 
 - One CSS file per component or page, beside its template.
 - Each file is a single `@layer components { @scope (.card) to (:scope [data-c] > *) { … } }`
