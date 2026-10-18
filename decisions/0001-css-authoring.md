@@ -18,7 +18,8 @@ it. The browser enforces this boundary, so it needs no build step and no
 naming convention.
 
 Every component and every page has one CSS file next to its template. The
-file holds one block. It is the same for every component except for the name:
+file holds one block. It is the same for every file except for the layer and
+the name:
 
 ```css
 @layer components {
@@ -26,16 +27,24 @@ file holds one block. It is the same for every component except for the name:
 }
 ```
 
-`.card` names the component. `data-c` on every component root marks where
-one component ends and the next begins.
+`.card` names the component. `data-c` on every component and page root marks
+where one ends and the next begins.
 
 All CSS sits in cascade layers, ordered once for the whole app:
 
-- **design system**: lowest priority. Its global styles live in its own
-  layers, which rank below the app's.
+- **`design-system`**: lowest priority. The design system's global styles are
+  imported into it.
 - **`base`**: document-level rules.
 - **`components`**: one block per component, as above.
-- **`pages`**: page-specific rules. They win over components.
+- **`pages`**: one block per page. A page is scoped like a component, so it
+  wins over components only on the roots of the components it places.
+
+The first stylesheet declares the order and imports the design system:
+
+```css
+@layer design-system, base, components, pages;
+@import url(…/design-system.css) layer(design-system);
+```
 
 A higher layer always wins, whatever the specificity or load order of the
 rules. The app builds on the design system's styles and tokens and can adjust
@@ -57,11 +66,15 @@ and cached long-term, and the files are served over HTTP/2.
   layers, specificity and that changing order would decide which rule wins.
   With layers, the role of a file decides: the design system, the app base,
   a component or a page.
+- **Layer order follows first appearance.** A design system that ships its
+  own layers would rank above or below the app depending on which file the
+  browser reads first. Importing it into `design-system` nests its layers
+  there, so they rank lowest on every page.
 - **Flat selectors inside a layer.** Within one layer, specificity is
   compared before scope proximity, so a more specific parent rule wins on a
-  child component's root. Proximity only breaks ties. Selectors therefore
-  stay flat, and overrides go into a higher layer instead of a more specific
-  selector.
+  child component's root. Proximity only breaks ties, in the child's favour.
+  Selectors therefore stay flat, and overrides go into a higher layer instead
+  of a more specific selector.
 - **Inline styles don't scale.** A `<style>` in every component instance
   slowed rendering more than linearly in every browser, by up to 60× on long
   lists. Inline CSS is also re-sent with every page instead of being cached.
@@ -76,8 +89,10 @@ and cached long-term, and the files are served over HTTP/2.
 - Colocation means a file next to the template, not CSS inside the markup.
 - All app CSS lives in a layer. Unlayered CSS would beat every layer, and
   `!important` reverses the layer order, so neither is used.
-- A design system has to ship its global styles in cascade layers, or the
-  app imports them into the lowest layer.
+- The design system's styles load through `@import`, which the browser
+  fetches only after the file that contains it.
+- A root without `data-c` silently lets its parent's styles in, and the
+  browser does not enforce flat selectors. Both need an automated check.
 - HTTP/2 is part of the server contract.
 - The server knows a page's components before it renders `<head>`. It already
   does for component scripts.
