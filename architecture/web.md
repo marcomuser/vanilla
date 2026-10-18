@@ -1,8 +1,9 @@
 # Vanilla web architecture
 
 First iteration, 2026-10-11. Describes the direction we settled on for building
-web user interfaces and for the `vanilla-web` skill that teaches it. Evidence
-for the decisions lives in [`prototypes/`](../prototypes).
+web user interfaces and for the `vanilla-web` skill that teaches it. Individual
+decisions, with their evidence and the alternatives considered, are recorded in
+[`decisions/`](decisions).
 
 ## Idea
 
@@ -56,6 +57,17 @@ legacy patterns. The skill exists to supply that missing architectural layer.
   declared in the project brief (`AGENTS.md` or `DESIGN.md`). If there is none,
   the agent asks which one to use instead of improvising components.
 
+### CSS
+
+Decided in [0001 CSS authoring](decisions/0001-css-authoring.md):
+
+- One CSS file per component or page, beside its template.
+- Each file is a single `@layer components { @scope (.card) to (:scope [data-c] > *) { … } }`
+  block. Pages use `@layer pages`.
+- Files are linked in `<head>` by the same helper that declares the page's
+  component scripts.
+- No `<style>` in templates and no `<link>` in `<body>`.
+
 ### Where JavaScript goes
 
 Each step is only taken if the previous one cannot do the job:
@@ -93,6 +105,8 @@ layout shifts, no unstyled flashes.
 - Components need JavaScript. Pages without JavaScript are not a goal.
 - Firefox currently lacks render-blocking scripts and cross-document view
   transitions. Pages work there but may briefly show unstyled components.
+- One CSS request per component on the first visit. This is free over HTTP/2,
+  which the server contract therefore requires (see decision 0001).
 
 ## The skill
 
@@ -125,14 +139,16 @@ exact syntax and a verification date.
 `assets/` holds a reference skeleton (layout, base CSS, an example island).
 
 `scripts/` holds deterministic checks: components used but not declared, an
-autoloader in use, styling of component internals, and a first-frame test for
-new components.
+autoloader in use, styling of component internals, CSS files that break the
+scoping idiom (`<style>` in templates, `<link>` in `<body>`, attribute scope
+roots), and a first-frame test for new components.
 
 ### Composition with other skills
 
 - Backend skills: this skill only assumes a server contract. Every URL renders
   a full document from a shared layout, mutations follow
-  POST/redirect/GET, and static assets are served with long-lived caching.
+  POST/redirect/GET, and static assets are served over HTTP/2 or later with
+  long-lived caching.
   Routing, templating and data belong to the backend.
 - Design-system skills: they own components, tokens and visual composition.
   This skill owns documents, navigation, transitions, islands, state, forms
@@ -155,5 +171,6 @@ new components.
 - Components that may measure themselves are untested: textarea, carousel,
   scroller, split-panel, stepper.
 - Browser support policy and canonical file structure need to be written down.
+  Decision 0001 settles where component and page styles live.
 - Evals: run realistic tasks with and without the skill to find where agents
   drift, and write the skill from those failures.
