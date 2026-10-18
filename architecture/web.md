@@ -50,7 +50,8 @@ legacy patterns. The skill exists to supply that missing architectural layer.
   builds. Web Awesome is the reference implementation.
 - The design system gives consistency through encapsulation: components expose
   attributes, slots, parts and tokens, and app code does not style their
-  internals.
+  internals. Decided in
+  [0002 Shadow DOM for the design system](../decisions/0002-shadow-dom-for-the-design-system.md).
 - The app uses native elements for document structure (`main`, `nav`,
   `article`, headings, links) and design-system components for visible UI.
 - Which design system a project uses, its element prefix and its rules are
@@ -59,7 +60,7 @@ legacy patterns. The skill exists to supply that missing architectural layer.
 
 ### CSS
 
-Decided in [0001 CSS authoring](../decisions/0001-css-authoring.md):
+Decided in [0003 Scoped CSS per component](../decisions/0003-scoped-css-per-component.md):
 
 - One CSS file per component or page, beside its template.
 - Each file is a single `@layer components { @scope (.card) to (:scope [data-c] > *) { … } }`
@@ -86,7 +87,8 @@ in storage, not in memory.
 ### First frame is final
 
 The central UX rule: a page paints its final layout in the first frame. No
-layout shifts, no unstyled flashes.
+layout shifts, no unstyled flashes. Decided in
+[0004 Design-system components defined before first paint](../decisions/0004-design-system-components-before-first-paint.md).
 
 - Each page declares the components it uses as render-blocking module scripts
   (`<script type="module" blocking="render" src="…">`), generated from one
@@ -106,7 +108,7 @@ layout shifts, no unstyled flashes.
 - Firefox currently lacks render-blocking scripts and cross-document view
   transitions. Pages work there but may briefly show unstyled components.
 - One CSS request per component on the first visit. This is free over HTTP/2,
-  which the server contract therefore requires (see decision 0001).
+  which the server contract therefore requires (see decision 0003).
 
 ## The skill
 
@@ -171,6 +173,6 @@ roots), and a first-frame test for new components.
 - Components that may measure themselves are untested: textarea, carousel,
   scroller, split-panel, stepper.
 - Browser support policy and canonical file structure need to be written down.
-  Decision 0001 settles where component and page styles live.
+  Decision 0003 settles where component and page styles live.
 - Evals: run realistic tasks with and without the skill to find where agents
   drift, and write the skill from those failures.

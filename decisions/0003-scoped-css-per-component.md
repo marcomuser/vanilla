@@ -1,8 +1,10 @@
-# 0001 CSS authoring
+# 0003 Scoped CSS per component
 
 ## Context
 
-App CSS has to work without a build step and be scoped per component.
+App CSS has to work without a build step and be scoped per app component.
+App components and pages live in the light DOM
+([0002](0002-shadow-dom-for-the-design-system.md)).
 It should sit close to the markup it styles and load fast. There should be
 only one way to write it.
 
@@ -48,8 +50,8 @@ The first stylesheet declares the order and imports the design system:
 
 A higher layer always wins, whatever the specificity or load order of the
 rules. The app builds on the design system's styles and tokens and can adjust
-them freely from its own layers. It never styles the inside of a
-design-system component.
+them freely from its own layers. A design-system component's inside is
+behind its shadow root, and the app places it like a nested app component.
 
 The server links the files a page uses in `<head>`. The URLs are versioned
 and cached long-term, and the files are served over HTTP/2.
@@ -94,13 +96,15 @@ and cached long-term, and the files are served over HTTP/2.
 - A root without `data-c` silently lets its parent's styles in, and the
   browser does not enforce flat selectors. Both need an automated check.
 - HTTP/2 is part of the server contract.
-- The server knows a page's components before it renders `<head>`. It already
-  does for component scripts.
+- The server knows a page's components before it renders `<head>`, as it
+  does for design-system component scripts
+  ([0004](0004-design-system-components-before-first-paint.md)).
 - Component names are global class names. Components leave their outer
   spacing and placement to the parent.
 - The boundary follows the rendered page, not the template file. Markup
-  passed into a component is styled by the component that receives it, not
-  by the one that wrote it.
+  passed into an app component is styled by the component that receives it.
+  Markup slotted into a design-system component stays with the app
+  component that wrote it.
 
 ## Alternatives
 
@@ -113,6 +117,7 @@ and cached long-term, and the files are served over HTTP/2.
 - **One concatenated bundle:** no faster over HTTP/2. It ships unused CSS and
   any change invalidates all of it.
 - **Global CSS with naming conventions:** styles leak into nested components.
-- **Shadow DOM or CSS module scripts:** conflict with light-DOM islands or
-  need JavaScript before the first paint.
+- **Shadow DOM or CSS module scripts:** turn every app component into a
+  custom element with a definition and styles per shadow root
+  ([0002](0002-shadow-dom-for-the-design-system.md)).
 - **Tailwind:** needs a build step.
