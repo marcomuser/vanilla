@@ -83,8 +83,11 @@ The server links the files a page uses in `<head>`, at versioned URLs
   does for design-system definitions
   ([0007](0007-design-system-components-before-first-paint.md)).
 - Components leave their outer spacing and placement to the parent.
-- The boundary follows the rendered page, not the template. Markup passed
-  into an app component is styled by the component that receives it.
+- The boundary follows the rendered page, not the template. Markup is
+  styled by the nearest `data-c` root above it. Markup passed into an app
+  component is styled by the component that receives it. Markup slotted
+  into a design-system component is styled by the app component around it
+  ([0005](0005-shadow-dom-for-the-design-system.md)).
 
 ## Alternatives
 
