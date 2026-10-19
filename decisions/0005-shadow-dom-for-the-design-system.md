@@ -39,9 +39,9 @@ system. `@scope` separates app components from each other.
   `@scope`, with parent and page rules reaching component roots. App
   components need no JavaScript and no definition.
 - **Slotted content stays with the app.** Children placed in a design-system
-  component remain light DOM. The app component that wrote them styles them,
-  and the design system reaches only the top-level slotted elements, with
-  `::slotted`.
+  component remain light DOM. The host carries no `data-c`, so the app
+  component around it styles them, and the design system reaches only the
+  top-level slotted elements, with `::slotted`.
 
 ## Consequences
 
