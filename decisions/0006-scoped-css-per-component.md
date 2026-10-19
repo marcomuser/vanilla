@@ -18,14 +18,14 @@ name:
 
 ```css
 @layer components {
-  @scope (.card) to (:scope [data-c] > *) { … }
+  @scope ([data-c="card"]) to (:scope [data-c] > *) { … }
 }
 ```
 
-`.card` names the component. `data-c` on every component and page root marks
-where one ends and the next begins. Styles stop there: a parent reaches only
-the root of a nested component, to place it, and nothing from outside reaches
-further in. Class names stay plain and short.
+`data-c` on every component and page root names it and marks where one ends
+and the next begins. Styles stop there: a parent reaches only the root of a
+nested component, to place it, and nothing from outside reaches further in.
+Class names stay plain and short, and none of them is global.
 
 All CSS sits in cascade layers. The first stylesheet declares their order
 once for the whole app and imports the design system:
@@ -50,6 +50,10 @@ The server links the files a page uses in `<head>`, at versioned URLs
   conventions and build-time class renaming. It limits where selectors
   match but does not isolate: inherited properties and global styles still
   reach in.
+- **Only roots carry a name.** With a class as the scope root, any element
+  with that class, in any component, would start the component's scope. `data-c` is
+  written only on roots, so no other markup can collide with a component,
+  and one attribute both starts a scope and ends the parent's.
 - **The role of a file decides priority, not load order.** Each page links
   only the files it uses, so the order of rules changes from page to page.
   A higher layer wins whatever the specificity or order, so the app can
@@ -77,13 +81,14 @@ The server links the files a page uses in `<head>`, at versioned URLs
   order, so neither is used.
 - The design system's styles load through `@import`, which the browser
   fetches only after the file that contains it.
-- A root without `data-c` silently lets its parent's styles in, and the
-  browser does not enforce flat selectors. Both need an automated check.
+- A root without `data-c` loses its own styles and lets its parent's in,
+  which shows at once.
+- `data-c` values are global, and the browser does not enforce flat
+  selectors. Both need an automated check.
 - The server knows a page's components before it renders `<head>`, as it
   does for design-system definitions
   ([0007](0007-design-system-components-before-first-paint.md)).
-- Component names are global class names. Components leave their outer
-  spacing and placement to the parent.
+- Components leave their outer spacing and placement to the parent.
 - The boundary follows the rendered page, not the template. Markup passed
   into an app component is styled by the component that receives it.
 
@@ -98,6 +103,8 @@ The server links the files a page uses in `<head>`, at versioned URLs
 - **One concatenated bundle:** no faster over HTTP/2. It ships unused CSS and
   any change invalidates all of it.
 - **Global CSS with naming conventions:** styles leak into nested components.
+- **Scope rooted on a class name:** any element with that class, in any
+  component, picks up the component's styles.
 - **Shadow DOM or CSS module scripts:** turn every app component into a
   custom element with a definition and styles per shadow root
   ([0005](0005-shadow-dom-for-the-design-system.md)).
