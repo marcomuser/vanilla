@@ -46,34 +46,28 @@ The server links the files a page uses in `<head>`, at versioned URLs
 
 ## Rationale
 
-- **The browser enforces the boundary.** `@scope` replaces naming
-  conventions and build-time class renaming. It limits where selectors
-  match but does not isolate: inherited properties and global styles still
-  reach in.
-- **Only roots carry a name.** With a class as the scope root, any element
-  with that class, in any component, would start the component's scope. `data-c` is
-  written only on roots, so no other markup can collide with a component,
-  and one attribute both starts a scope and ends the parent's.
+- **The browser enforces the boundary.** `@scope` limits where a
+  component's selectors match, with no build step. It does not isolate:
+  inherited properties and global styles still reach in.
+- **Only roots carry a name.** `data-c` is written only on roots, so no
+  other markup can start a component's scope, and one attribute both starts
+  a scope and ends the parent's.
 - **The role of a file decides priority, not load order.** Each page links
   only the files it uses, so the order of rules changes from page to page.
   A higher layer wins whatever the specificity or order, so the app can
   adjust the design system freely from its own layers.
-- **The design system ranks lowest on every page.** Layer order follows
-  first appearance, so layers the design system ships would rank above or
-  below the app depending on which file the browser reads first. Importing
-  it into `design-system` nests them there.
+- **The design system ranks lowest on every page.** Importing it into
+  `design-system` nests any layers it ships there, whichever file the
+  browser reads first.
 - **Selectors stay flat.** Within one layer, specificity is compared before
   scope proximity, so a more specific parent rule wins on a child's root.
   Proximity only breaks ties, in the child's favour. Overrides go into a
   higher layer, not a more specific selector.
-- **Inline styles don't scale.** A `<style>` in every component instance
-  slowed rendering more than linearly in every browser, by up to 60× on long
-  lists, and is re-sent with every page.
 - **Separate files cost nothing over HTTP/2.** One file per component loaded
   as fast as a single bundle. Each is cached on its own, and a page loads
   only what it uses.
-- **Stylesheets belong in `<head>`.** In the body they change the DOM
-  structure that selectors depend on, and the page paints in parts.
+- **Stylesheets in `<head>` paint the page once.** Every rule applies before
+  the first paint.
 
 ## Consequences
 
@@ -94,8 +88,9 @@ The server links the files a page uses in `<head>`, at versioned URLs
 
 ## Alternatives
 
-- **`<style>` in each component instance:** cost grows faster than the page,
-  and the CSS can't be cached.
+- **`<style>` in each component instance:** slowed rendering more than
+  linearly in every browser, by up to 60× on long lists, and the CSS can't
+  be cached.
 - **One `<style>` per page or component type:** fast, but not cached across
   pages.
 - **`<link>` in `<body>` beside the component:** breaks structural selectors
